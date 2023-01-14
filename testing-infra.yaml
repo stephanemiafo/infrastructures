@@ -100,8 +100,8 @@ Parameters:
     NoEcho: true
     Default: databasePassword
     Type: AWS::SSM::Parameter::Value<String>
-    MinLength: '8'
-    MaxLength: '41'
+    # MinLength: '8'
+    # MaxLength: '41'
     
   DBInstanceID:
     Default: database-1
@@ -116,8 +116,8 @@ Parameters:
     Default: MyDataBase
     Description: the name of my database
     Type: String
-    MinLength: '1'
-    MaxLength: '64'
+    # MinLength: '1'
+    # MaxLength: '64'
     ConstraintDescription: Must begin with a letter and contain only alphanumeric characters.
 
   DBInstanceClass:
@@ -139,10 +139,10 @@ Parameters:
     Description: The Region where the DB will be created
     Type: String
 
-  MyRRAvailabilityZone:
-    Default: "us-east-2a"
-    Description: The AZ where the RR will be created
-    Type: String
+  # MyRRAvailabilityZone:
+  #   Default: "us-east-2a"
+  #   Description: The AZ where the RR will be created
+  #   Type: String
 
 Resources:
   VPC:
@@ -799,33 +799,33 @@ Resources:
         - Key: Name
           Value: !Sub ${EnvironmentName}-Public-SG
 
-  # PrivateSecurityGroup:
-  #   Type: AWS::EC2::SecurityGroup
-  #   Properties:
-  #     GroupDescription: Allow http access and ssh into the instance
-  #     SecurityGroupIngress:
-  #       - IpProtocol: tcp
-  #         FromPort: 80
-  #         ToPort: 80
-  #         SourceSecurityGroupId: !Ref PublicSecurityGroup
-  #       - IpProtocol: tcp
-  #         FromPort: 22
-  #         ToPort: 22
-  #         CidrIp: 173.164.135.61/32   #!Ref VpcCIDR
-  #     VpcId: !Ref VPC
-  #     Tags:
-  #       - Key: Name
-  #         Value: !Sub ${EnvironmentName}-Private-SG
+  PrivateSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Allow http access and ssh into the instance
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          SourceSecurityGroupId: !Ref PublicSecurityGroup
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 173.164.135.61/32   #!Ref VpcCIDR
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value: !Sub ${EnvironmentName}-Private-SG
 
   DBSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
       GroupDescription: Allow private SG access to the DB
       SecurityGroupIngress:
-        # - IpProtocol: tcp
-        #   FromPort: !Ref DBPort
-        #   ToPort: !Ref DBPort
-        #   SourceSecurityGroupId: !Ref PrivateSecurityGroup
+        - IpProtocol: tcp
+          FromPort: !Ref DBPort
+          ToPort: !Ref DBPort
+          SourceSecurityGroupId: !Ref PrivateSecurityGroup
         - IpProtocol: tcp
           FromPort: !Ref DBPort
           ToPort: !Ref DBPort
@@ -851,7 +851,6 @@ Resources:
   MySQLDatabase:
     Type: AWS::RDS::DBInstance
     Properties:
-      # AvailabilityZone: !Ref MyDBAvailabilityZone   # this option is not valid for multiAZ deployment
       AllocatedStorage: !Ref DBAllocatedStorage
       DBInstanceClass: !Ref DBInstanceClass
       DBName: !Ref DBName
@@ -872,13 +871,12 @@ Resources:
         - Key: "Database"
           Value: !Sub ${EnvironmentName}-MyDB-${AWS::Region}
 
-  # MySQLRRDatabase:
-  #   Type: "AWS::RDS::DBInstance"
-  #   Properties:
-  #     # AvailabilityZone: !Ref MyRRAvailabilityZone
-  #     DBInstanceClass: !Ref DBInstanceClass                      # NEEDS TO BE MADE CROSS-REGION REPLICA
-  #     SourceDBInstanceIdentifier: !Ref DBInstanceID
-  #     SourceRegion: !Ref MySourceRegion
+  MySQLRRDatabase:
+    Type: "AWS::RDS::DBInstance"
+    Properties:
+      DBInstanceClass: !Ref DBInstanceClass                      # NEEDS TO BE MADE CROSS-REGION REPLICA
+      SourceDBInstanceIdentifier: !Ref DBInstanceID
+      SourceRegion: !Ref MySourceRegion
 
 Outputs:
   VPC:
@@ -959,11 +957,11 @@ Outputs:
     Export:
       Name: DB-Subnet3
 
-  # MyPrivateSecurityGroup:
-  #   Description: A reference to the sg attached the instance
-  #   Value: !GetAtt PrivateSecurityGroup.GroupId
-  #   Export:
-  #     Name: private-SG
+  MyPrivateSecurityGroup:
+    Description: A reference to the sg attached the instance
+    Value: !GetAtt PrivateSecurityGroup.GroupId
+    Export:
+      Name: private-SG
 
   MyPublicSecurityGroup:
     Description: A reference to the sg attached the instance
