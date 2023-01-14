@@ -91,8 +91,8 @@ Parameters:
     NoEcho: 'true'
     Default: DatabaseUserName
     Type: AWS::SSM::Parameter::Value<String>
-    MinLength: '8'
-    MaxLength: '41'
+    # MinLength: '8'
+    # MaxLength: '41'
     # ConstraintDescription: must begin with a letter and contain only alphanumeric characters.
 
   DBPwd: 
@@ -116,8 +116,8 @@ Parameters:
     Default: MyDataBase
     Description: the name of my database
     Type: String
-    # MinLength: '1'
-    # MaxLength: '64'
+    MinLength: '1'
+    MaxLength: '64'
     ConstraintDescription: Must begin with a letter and contain only alphanumeric characters.
 
   DBInstanceClass:
