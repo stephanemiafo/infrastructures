@@ -1,0 +1,46 @@
+
+# BUILDSPEC ON AMAZON LINUX2
+
+version: 0.2
+
+run-as: ec2-user
+env:
+  variables:
+    CFNLINT_HOME: "/home/ec2-user/.local/bin:/sbin:/bin:/usr/sbin:/usr/bin"
+  parameter-store:
+    DB_UN: /codeBuild/test/database/UserName
+    DB_PW: /CodeBuild/test/database/password
+
+phases:
+  install:
+    runtime-versions:
+      python: 3.7
+  pre_build:
+    commands:
+      - aws --version
+      - python3 --version  
+      - pip3 --version
+  build:
+    commands:
+      - echo Build started on `date`
+      - sudo yum update -y
+      # - sudo apt-get update -y      
+      # - echo installing aws cli  1.22.34
+      # - sudo apt-get install awscli -y
+      - echo installing cfn-lint
+      - pip3 install cfn-lint
+      # - echo modifying the $PATH
+      # - echo 'export PATH="/home/ubuntu/.local/bin:$PATH"' >> ~/.bashrc
+      # - echo making the $PATH permanent
+      - source ~/.bashrc
+      - echo validate cfn template 
+      - cfn-lint aws-infra.yaml
+      - echo package the cfn template
+      - aws cloudformation package --template-file aws-infra.yaml --s3-bucket mynewestfirstbucket --output-template-file aws-infra-artifacts.yaml
+  post_build:
+    commands:
+      - echo Build completed on `date`
+artifacts:
+  files:
+    - aws-infra.yaml
+    - aws-infra-artifacts.yaml
