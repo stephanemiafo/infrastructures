@@ -35,4 +35,4 @@ phases:
 artifacts:
   files:
     - testing-infra.yaml
-    - aws-infra-artifacts.yaml
+    - testing-infra-artifacts.yaml
