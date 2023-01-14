@@ -7,8 +7,8 @@ env:
   variables:
     CFNLINT_HOME: "/home/ec2-user/.local/bin:/sbin:/bin:/usr/sbin:/usr/bin"
   parameter-store:
-    DB_UN: /test/database/UserName
-    DB_PW: /test/database/password
+    DB_UN: DatabaseUserName         # THE CODEBUILD SERVICE ROLE WHILE CREATING THE PIPELINE SHOULD HAVE 
+    DB_PW: databasePassword
 
 phases:
   install:
