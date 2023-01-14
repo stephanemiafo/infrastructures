@@ -8,8 +8,8 @@ env:
   variables:
     CFNLINT_HOME: "/home/ec2-user/.local/bin:/sbin:/bin:/usr/sbin:/usr/bin"
   parameter-store:
-    DB_UN: /codeBuild/test/database/UserName
-    DB_PW: /CodeBuild/test/database/password
+    DB_UN: /test/database/UserName
+    DB_PW: /test/database/password
 
 phases:
   install:
